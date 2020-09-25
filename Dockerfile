@@ -11,7 +11,7 @@ RUN apt update && apt install -y \
 	python3-pip \
         tzdata
 
-RUN pip3 install discord.py simple_zpl2 pillow
+RUN pip3 install discord.py simple_zpl2 pillow python-dotenv
 
 COPY discordbot.py ./
 COPY labelmaker.py ./
