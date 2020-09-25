@@ -1,14 +1,12 @@
 import os
 import labelmaker
+import time
 
 import discord
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-
-if TOKEN == '':
-    exit()
 
 client = discord.Client()
 
@@ -36,5 +34,10 @@ async def on_message(message):
 
         await message.channel.send(response)
 
-client.run(TOKEN)
 
+if __name__ == "__main__":
+    if TOKEN != '':
+        client.run(TOKEN)
+        labelmaker.printlabel('Discoball Power-On Self-Test', 'Bot started:', datetime.now().strftime("%Y%m%d %H:%M:%S"), barcodedata=datetime.now().strftime("%Y%m%d%H%M%S"))
+    else:
+        print('%s Bot Failed: No Token'%datetime.now()

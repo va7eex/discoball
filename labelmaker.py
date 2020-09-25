@@ -18,15 +18,15 @@ def printlabel(bigtext, littletextleft='', littletextright='', barcodedata='', b
     zpl.add_font('C', zpl._ORIENTATION_NORMAL, 30)
     zpl.add_field_data(wraptext_big(bigtext))
 
-    zpl.add_field_origin(0, 60, justification='0')
+    zpl.add_field_origin(0, 120, justification='0')
     zpl.add_font('C', zpl._ORIENTATION_NORMAL, 15)
     zpl.add_field_data(littletextleft)
 
-    zpl.add_field_origin(450, 60, justification='1')
+    zpl.add_field_origin(460, 120, justification='1')
     zpl.add_font('C', zpl._ORIENTATION_NORMAL, 15)
     zpl.add_field_data(littletextright)
 
-    zpl.add_field_origin(20, 90)
+    zpl.add_field_origin(20, 150)
     if 'code128' in barcodetype:
         bc = Code128_Barcode(barcodedata, 'N', 30, 'Y')
         zpl.add_barcode(bc)
