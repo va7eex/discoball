@@ -26,7 +26,7 @@ async def on_message(message):
         print(len(labelstr))
         #backfill up to 6 commas
         for i in range(0,6-len(message.content.split(','))):
-            labelstr + ','
+            labelstr += ','
         labelstr = labelstr.split(',')
         lp.printlabel(labelstr[1],labelstr[2],labelstr[3],labelstr[4],labelstr[5])
         await message.channel.send(response)
