@@ -16,4 +16,4 @@ RUN pip3 install discord.py simple_zpl2 pillow python-dotenv
 COPY discordbot.py ./
 COPY labelmaker.py ./
 
-ENTRYPOINT ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && bash
+ENTRYPOINT ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && python3 -u discordbot.py

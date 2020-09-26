@@ -25,7 +25,7 @@ class labelprinter:
         zpl.add_field_origin(10, 10)
         zpl.add_font('C', zpl._ORIENTATION_NORMAL, 30)
         zpl.add_field_block(460,2,text_justification='C')
-        zpl.add_field_data(_wraptext_big(bigtext), True)
+        zpl.add_field_data(self._wraptext_big(bigtext), True)
 
         zpl.add_field_origin(0, 120, justification='0')
         zpl.add_font('C', zpl._ORIENTATION_NORMAL, 15)
@@ -49,5 +49,5 @@ class labelprinter:
         return True
 
 if __name__ == "__main__":
-    lp = labelprinter(os.getenv('PRINTER_IP')
+    lp = labelprinter(os.getenv('PRINTER_IP'))
     lp.printlabel('THIS IS A TEST', 'left', 'right', barcodedata='12345')

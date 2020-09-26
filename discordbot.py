@@ -1,5 +1,5 @@
 import os
-import labelmaker
+from labelmaker import labelprinter
 import datetime
 
 
@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-lp = None
+#lp = None
 client = discord.Client()
 
 @client.event
@@ -35,7 +35,7 @@ async def on_message(message):
 if __name__ == "__main__":
     if TOKEN != '':
         global lp
-        lp = labelprinter(os.getenv('PRINTER_IP')
+        lp = labelprinter(os.getenv('PRINTER_IP'))
         lp.printlabel('Discoball Power-On Self-Test', 'Bot started:', datetime.datetime.now().strftime("%Y%m%d %H:%M:%S"), barcodedata=datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
         client.run(TOKEN)
     else:
