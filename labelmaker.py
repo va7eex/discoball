@@ -7,42 +7,64 @@ from simple_zpl2 import QR_Barcode
 
 class labelprinter:
 
-    def __init__(self, ip):
-        self._ip = ip
+    DPI203 = 8 #dots per mm
+    DPI300 = 12 #dots per mm
 
-    def _wraptext_big(self,text):
-        if len(text) > 20:
-            text = text[:20] + '\n' + text[20:]
-            print(text)
-            return text
-        return text
+    def __init__(self, ip, width=2.625, height=1, imperialunits=True, dpi=DPI203, font='C', bigtextsize=30):
+        self._ip = ip
+        self._dpi = dpi
+        self._barcodeheight = int(self._dpi * 2)
+        self._bigtextsize = int(max(bigtextsize,self._dpi*2))
+        self._smalltextsize = int(max(bigtextsize/2,self._dpi))
+        self._font = font
+        if imperialunits:
+            self._width = int(width * 25.4 * self._dpi)
+            self._height = int(height * 25.4 * self._dpi)
+        else:
+            self._width = int(width * self._dpi)
+            self._height = int(height * self._dpi)
 
     def printlabel(self, bigtext, littletextleft='', littletextright='', barcodedata='', barcodetype='code128'):
 
         prn = NetworkPrinter(self._ip)
         zpl = ZPLDocument()
 
-        zpl.add_field_origin(10, 10)
-        zpl.add_font('C', zpl._ORIENTATION_NORMAL, 30)
-#        zpl.add_field_data(self._wraptext_big(bigtext), True)
-        zpl.add_field_block(460,3,text_justification='C')
-        zpl.add_field_data(bigtext)
+        # center the big text a bit
+        if littletextright == '' and littletextleft == '':
+            bigtext = '$CR$CR' + bigtext
+        elif len(bigtext) <= 40 and len(bigtext) > 20:
+            bigtext = '$CR' + bigtext
+        elif len(bigtext) <= 20:
+            bigtext = '$CR$CR' + bigtext
 
-        zpl.add_field_origin(0, 120, justification='0')
-        zpl.add_font('C', zpl._ORIENTATION_NORMAL, 15)
+        # y coords for some things
+        bigtextYoffset = int(self._dpi*1.5)
+        bigtextXoffset = int(self._dpi*1)
+        barcodeYoffset = int(self._dpi*3+self._barcodeheight)
+        smalltextYoffset = int(barcodeYoffset+self._dpi+self._smalltextsize)
+
+        zpl.add_field_origin(bigtextXoffset, bigtextYoffset)
+        zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._bigtextsize)
+#        zpl.add_field_data(self._wraptext_big(bigtext), True)
+        zpl.add_field_block(self._width-bigtextXoffset,3,text_justification='C')    #note: the 'width' field here does not account
+                                                                               #for the origin of this box, so its width-dpi*2
+        zpl.add_field_data(bigtext.replace('$CR','\&'))
+
+        zpl.add_field_origin(self._dpi, self._height-smalltextYoffset, justification='0')
+        zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._smalltextsize)
         zpl.add_field_data(littletextleft)
 
-        zpl.add_field_origin(460, 120, justification='1')
-        zpl.add_font('C', zpl._ORIENTATION_NORMAL, 15)
+        zpl.add_field_origin(self._width-self._dpi, self._height-smalltextYoffset, justification='1')
+        zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._smalltextsize)
         zpl.add_field_data(littletextright)
 
         if(barcodedata != ''):
-            zpl.add_field_origin(20, 150)
+            zpl.add_field_origin(self._dpi, self._height-barcodeYoffset)
             if 'code128' in barcodetype:
-                bc = Code128_Barcode(barcodedata, 'N', 30, 'Y')
+                bc = Code128_Barcode(barcodedata, 'N', self._barcodeheight, 'Y')
                 zpl.add_barcode(bc)
             elif 'qr' in barcodetype:
-                bc = QR_Barcode(barcodedata, 'N', 30, 'Y')
+                bc = QR_Barcode(barcodedata, 'N', self._barcodeheight, 'Y')
                 zpl.add_barcode(bc)
 
 
