@@ -10,6 +10,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 #lp = None
 client = discord.Client()
+maxqty = 10
 
 @client.event
 async def on_ready():
@@ -20,16 +21,28 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if 'bclp,' in message.content:
-        response = message.content
-        labelstr = message.content
-        print(len(labelstr))
+    if '!lp ' in message.content:
+        qty = 1
+        labelstr = message.content.replace('!lp ','').strip()
+        inspectstr, qtystr = labelstr.split(' ')[0], labelstr.split(' ')[1]
+
+
+        if 'qty' in inspectstr:
+            if len(inspectstr.replace('qty','')) > 0 and inspectstr.replace('qty','').isdigit():
+                qty = min(max(int(inspectstr.replace('qty','').strip()),1),maxqty)
+                labelstr = labelstr.replace(f'{inspectstr} ','')
+            elif qtystr.isdigit():
+                qty = min(max(int(qtystr.strip()),1),maxqty)
+                labelstr = labelstr.replace(f'qty {qtystr} ','')
+
         #backfill up to 6 commas
-        for i in range(0,6-len(message.content.split(','))):
+        for i in range(5-len(labelstr.split(','))):
             labelstr += ','
         labelstr = labelstr.split(',')
-        lp.printlabel(labelstr[1],labelstr[2],labelstr[3],labelstr[4],labelstr[5])
-        await message.channel.send(response)
+        lp.printlabel(labelstr[0],labelstr[1],labelstr[2],labelstr[3],labelstr[4], quantity=qty)
+
+        await message.channel.send(f'{message.content}')
+        await message.channel.send(f'Printing label x {qty}')
 
 
 if __name__ == "__main__":

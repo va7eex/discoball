@@ -1,3 +1,4 @@
+
 import os
 
 from simple_zpl2 import NetworkPrinter
@@ -24,18 +25,20 @@ class labelprinter:
             self._width = int(width * self._dpi)
             self._height = int(height * self._dpi)
 
-    def printlabel(self, bigtext, littletextleft='', littletextright='', barcodedata='', barcodetype='code128'):
+    def printlabel(self, bigtext, littletextleft='', littletextright='', barcodedata='', barcodetype='code128', quantity=1):
 
         prn = NetworkPrinter(self._ip)
         zpl = ZPLDocument()
 
-        # center the big text a bit
-        if littletextright == '' and littletextleft == '':
-            bigtext = '$CR$CR' + bigtext
-        elif len(bigtext) <= 40 and len(bigtext) > 20:
-            bigtext = '$CR' + bigtext
-        elif len(bigtext) <= 20:
-            bigtext = '$CR$CR' + bigtext
+        #if we have our newline character already ignore some 'smart' formatting
+        if '$CR' not in bigtext:
+            # center the big text a bit
+            if littletextright == '' and littletextleft == '':
+                bigtext = '$CR$CR' + bigtext
+            elif len(bigtext) <= 40 and len(bigtext) > 20:
+                bigtext = '$CR' + bigtext
+            elif len(bigtext) <= 20:
+                bigtext = '$CR$CR' + bigtext
 
         # y coords for some things
         bigtextYoffset = int(self._dpi*1.5)
@@ -46,29 +49,35 @@ class labelprinter:
         zpl.add_field_origin(bigtextXoffset, bigtextYoffset)
         zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._bigtextsize)
 #        zpl.add_field_data(self._wraptext_big(bigtext), True)
-        zpl.add_field_block(self._width-bigtextXoffset,3,text_justification='C')    #note: the 'width' field here does not account
-                                                                               #for the origin of this box, so its width-dpi*2
-        zpl.add_field_data(bigtext.replace('$CR','\&'))
+	if len(littletextleft) > 0 or len(littletextright) > 0 or len(barcodedata) > 0:
+            #note: the 'width' field here does not account
+            #for the origin of this box, so its width-dpi*2
+            zpl.add_field_block(self._width-bigtextXoffset,3,text_justification='C')
+        else:
+            #if no lower text, allow expanded big text data
+            zpl.add_field_block(self._width-bigtextXoffset,5,text_justification='C')
+        zpl.add_field_data(bigtext.strip().replace('$CR','\&'))
 
         zpl.add_field_origin(self._dpi, self._height-smalltextYoffset, justification='0')
         zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._smalltextsize)
-        zpl.add_field_data(littletextleft)
+        zpl.add_field_data(littletextleft.strip())
 
         zpl.add_field_origin(self._width-self._dpi, self._height-smalltextYoffset, justification='1')
         zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._smalltextsize)
-        zpl.add_field_data(littletextright)
+        zpl.add_field_data(littletextright.strip())
 
-        if(barcodedata != ''):
+        if(len(barcodedata) > 0):
             zpl.add_field_origin(self._dpi, self._height-barcodeYoffset)
             if 'code128' in barcodetype:
-                bc = Code128_Barcode(barcodedata, 'N', self._barcodeheight, 'Y')
+                bc = Code128_Barcode(barcodedata.strip(), 'N', self._barcodeheight, 'Y')
                 zpl.add_barcode(bc)
             elif 'qr' in barcodetype:
                 bc = QR_Barcode(barcodedata, 'N', self._barcodeheight, 'Y')
                 zpl.add_barcode(bc)
 
+        for i in range(quantity):
+            prn.print_zpl(zpl)
 
-        prn.print_zpl(zpl)
         return True
 
 if __name__ == "__main__":
