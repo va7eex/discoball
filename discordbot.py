@@ -22,6 +22,9 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    if message.content.startswith('!help'):
+        await message.channel.send('Current commands:\n\nLabel Commands:```!lp [qty \#] Bigtext,LittleText,LittleTextRight,BarcodeData,BarcodeType```')
+
     if message.content.startswith('!lp '):
         qty = 1
         labelstr = message.content.replace('!lp ','').strip()
@@ -50,7 +53,7 @@ async def on_message(message):
         for i in range(5-len(labelstr.split(','))):
             labelstr += ','
         labelstr = labelstr.split(',')
-        lp.printlabel(labelstr[0],labelstr[1],labelstr[2],labelstr[3],labelstr[4], quantity=qty)
+        lp.printlabel(labelstr[0],labelstr[1].strip(),labelstr[2].strip(),labelstr[3].strip(),labelstr[4].strip(), quantity=qty)
 
         await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
 

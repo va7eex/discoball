@@ -54,7 +54,7 @@ class labelprinter:
         else:
             #if no lower text, allow expanded big text data
             zpl.add_field_block(self._width-int(2*bigtextXoffset),5,text_justification='C')
-        zpl.add_field_data(bigtext.strip().replace('$CR','\&'))
+        zpl.add_field_data(bigtext.strip().replace('$CR','\n'), replace_newlines=True)
 
         zpl.add_field_origin(self._dpi, self._height-smalltextYoffset, justification='0')
         zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._smalltextsize)
