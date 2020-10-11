@@ -49,13 +49,11 @@ class labelprinter:
         zpl.add_field_origin(bigtextXoffset, bigtextYoffset)
         zpl.add_font(self._font, zpl._ORIENTATION_NORMAL, self._bigtextsize)
 #        zpl.add_field_data(self._wraptext_big(bigtext), True)
-	if len(littletextleft) > 0 or len(littletextright) > 0 or len(barcodedata) > 0:
-            #note: the 'width' field here does not account
-            #for the origin of this box, so its width-dpi*2
-            zpl.add_field_block(self._width-bigtextXoffset,3,text_justification='C')
+        if len(littletextleft) > 0 or len(littletextright) > 0 or len(barcodedata) > 0:
+            zpl.add_field_block(self._width-int(2*bigtextXoffset),3,text_justification='C')
         else:
             #if no lower text, allow expanded big text data
-            zpl.add_field_block(self._width-bigtextXoffset,5,text_justification='C')
+            zpl.add_field_block(self._width-int(2*bigtextXoffset),5,text_justification='C')
         zpl.add_field_data(bigtext.strip().replace('$CR','\&'))
 
         zpl.add_field_origin(self._dpi, self._height-smalltextYoffset, justification='0')
@@ -82,4 +80,4 @@ class labelprinter:
 
 if __name__ == "__main__":
     lp = labelprinter(os.getenv('PRINTER_IP'))
-    lp.printlabel('THIS IS A TEST', 'left', 'right', barcodedata='12345')
+    lp.printlabel('THIS IS A TEST', '|< left', 'right >|', barcodedata='12345')
