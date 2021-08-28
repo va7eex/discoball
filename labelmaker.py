@@ -26,10 +26,11 @@ class labelprinter:
             self._width = int(width * self._dpi)
             self._height = int(height * self._dpi)
 
-    def printlabel(self, bigtext, littletextleft='', littletextright='', barcodedata='', barcodetype='code128', quantity=1):
+    def printlabel(self, bigtext: str, littletextleft: str = '', littletextright: str = '', barcodedata: str = '', barcodetype: str = 'code128', quantity: int = 1, preview: bool = False):
 
         prn = NetworkPrinter(self._ip)
         zpl = ZPLDocument()
+        zpl.add_print_quantity(quantity)
 
         #if we have our newline character already ignore some 'smart' formatting
         if '$CR' not in bigtext:
@@ -74,7 +75,9 @@ class labelprinter:
                 bc = QR_Barcode(barcodedata, 'N', self._barcodeheight, 'Y')
                 zpl.add_barcode(bc)
 
-        for i in range(quantity):
+        if preview:
+            return zpl.render_png(self._width,self._height,self._dpi)
+        else:
             prn.print_zpl(zpl)
 
         return True

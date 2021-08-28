@@ -1,5 +1,6 @@
 import os
 import datetime
+from PIL.Image import Image
 import discord
 import logging
 
@@ -27,6 +28,7 @@ async def on_message(message):
 
     if message.content.startswith('!lp '):
         qty = 1
+        preview = False
         labelstr = message.content.replace('!lp ','').strip()
 #        labelstr = pf.censor(message.content.replace('!lp ','').strip())
 
@@ -41,21 +43,26 @@ async def on_message(message):
 
         inspectstr, qtystr = checkforquantity(labelstr)
 
-        if inspectstr is not None and inspectstr.startswith('qty'):
-            if len(inspectstr.replace('qty','')) > 0 and inspectstr.replace('qty','').isdigit():
-                qty = min(max(int(inspectstr.replace('qty','').strip()),1),maxqty)
-                labelstr = labelstr.replace(f'{inspectstr} ','')
-            elif qtystr.isdigit():
-                qty = min(max(int(qtystr.strip()),1),maxqty)
-                labelstr = labelstr.replace(f'qty {qtystr} ','')
+        if inspectstr is not None:
+            if inspectstr.startswith('qty'):
+                if len(inspectstr.replace('qty','')) > 0 and inspectstr.replace('qty','').isdigit():
+                    qty = min(max(int(inspectstr.replace('qty','').strip()),1),maxqty)
+                    labelstr = labelstr.replace(f'{inspectstr} ','')
+                elif qtystr.isdigit():
+                    qty = min(max(int(qtystr.strip()),1),maxqty)
+                    labelstr = labelstr.replace(f'qty {qtystr} ','')
+            if inspectstr.startswith('preview'):
+                preview = True
 
         #backfill up to 6 commas
         for i in range(5-len(labelstr.split(','))):
             labelstr += ','
         labelstr = labelstr.split(',')
-        lp.printlabel(labelstr[0],labelstr[1].strip(),labelstr[2].strip(),labelstr[3].strip(),labelstr[4].strip(), quantity=qty)
-
-        await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
+        report = lp.printlabel(labelstr[0],labelstr[1].strip(),labelstr[2].strip(),labelstr[3].strip(),labelstr[4].strip(), quantity=qty, preview=preview)
+        if type(report) is bool:
+            await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
+        elif type(report) is Image:
+            await message.channel.send(file=report)
 
 def osBooltoPyBool(str):
     if 'true' in str.lower(): return True
