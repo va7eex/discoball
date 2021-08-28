@@ -1,9 +1,10 @@
 import os
 import datetime
-from PIL.Image import Image
+import io
 import discord
 import logging
 
+from PIL.Image import Image
 from labelmaker import labelprinter
 from dotenv import load_dotenv
 
@@ -62,7 +63,7 @@ async def on_message(message):
         if type(report) is bool:
             await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
         elif type(report) is bytearray:
-            await message.channel.send(file=report)
+            await message.channel.send(file=Image.open(io.BytesIO(report)))
 
 def osBooltoPyBool(str):
     if 'true' in str.lower(): return True
