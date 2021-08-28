@@ -23,8 +23,8 @@ class labelprinter:
         self._smalltextsize = int(max(bigtextsize/2,self._dpi))
         self._font = font
         if imperialunits:
-            self._width = int(width * 25.4 * self._dpi)
-            self._height = int(height * 25.4 * self._dpi)
+            self._width = int(width * self._dpi)
+            self._height = int(height * self._dpi)
         else:
             self._width = int(width * self._dpi)
             self._height = int(height * self._dpi)
