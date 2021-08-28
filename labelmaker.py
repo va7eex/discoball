@@ -1,5 +1,6 @@
 
 import os
+import logging
 
 from simple_zpl2 import NetworkPrinter
 from simple_zpl2 import ZPLDocument

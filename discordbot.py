@@ -1,9 +1,9 @@
 import os
 import datetime
 import discord
+import logging
 
 from labelmaker import labelprinter
-from profanity_filter import ProfanityFilter
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,7 +15,7 @@ startuplines = [ 'Goliath Online', 'Reactor Online\nSensors Online\nWeapons Onli
 
 @client.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    logging.debug(f'{client.user} has connected to Discord!')
 
 @client.event
 async def on_message(message):
@@ -64,16 +64,14 @@ def osBooltoPyBool(str):
 if __name__ == "__main__":
     if TOKEN != '':
         global lp
-        global pf
         lp = labelprinter(os.getenv('PRINTER_IP'),
                           width=float(os.getenv('LABELWIDTH')),
                           height=float(os.getenv('LABELHEIGHT')),
                           imperialunits=osBooltoPyBool(os.getenv('IMPERIALUNITS')))
-        lp.printlabel('Discoball Power-On Self-Test',
+        lp.printlabel('Discoball Power On Self Test',
                       'Bot started:',
                       datetime.datetime.now().strftime("%Y%m%d %H:%M:%S"),
                       barcodedata=datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-#        pf = ProfanityFilter(languages=['en'])
         client.run(TOKEN)
     else:
-        print('%s Bot Failed: No Token'%datetime.datetime.now())
+        logging.warning('%s Bot Failed: No Token'%datetime.datetime.now())
