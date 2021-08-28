@@ -15,10 +15,10 @@ RUN apt update && apt install -y \
         tzdata \
         iputils-ping
 
+COPY requirements.txt ./
+RUN pip3 install -r requirements.txt
+
 COPY discordbot.py ./
 COPY labelmaker.py ./
-COPY requirements.txt ./
-
-RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && ping -c 4 $PRINTER_IP > /dev/null 2>&1 && python3 -u discordbot.py || echo "Failed to locate printer"
