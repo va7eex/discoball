@@ -76,7 +76,7 @@ class labelprinter:
                 zpl.add_barcode(bc)
 
         if preview:
-            return zpl.render_png(self._width,self._height,self._dpi)
+            return zpl.render_png(self._width/self._dpi,self._height/self._dpi,self._dpi)
         else:
             prn.print_zpl(zpl)
 
