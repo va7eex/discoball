@@ -25,7 +25,7 @@ async def on_message(message):
         return
 
     if message.content.startswith('!help'):
-        await message.channel.send('Current commands:\n\nLabel Commands:```!lp [qty \#] Bigtext,LittleText,LittleTextRight,BarcodeData,BarcodeType```')
+        await message.channel.send('Current commands:\n\nLabel Commands:```!lp [-qty \#][-preview] Bigtext,LittleText,LittleTextRight,BarcodeData,BarcodeType```')
 
     if message.content.startswith('!lp '):
         qty = 1
@@ -45,14 +45,15 @@ async def on_message(message):
         inspectstr, qtystr = checkforquantity(labelstr)
 
         if inspectstr is not None:
-            if inspectstr.startswith('qty'):
-                if len(inspectstr.replace('qty','')) > 0 and inspectstr.replace('qty','').isdigit():
-                    qty = min(max(int(inspectstr.replace('qty','').strip()),1),maxqty)
+            if inspectstr.startswith('-qty'):
+                if len(inspectstr.replace('-qty','')) > 0 and inspectstr.replace('qty','').isdigit():
+                    qty = min(max(int(inspectstr.replace('-qty','').strip()),1),maxqty)
                     labelstr = labelstr.replace(f'{inspectstr} ','')
                 elif qtystr.isdigit():
                     qty = min(max(int(qtystr.strip()),1),maxqty)
                     labelstr = labelstr.replace(f'qty {qtystr} ','')
-            if inspectstr.startswith('preview'):
+            if inspectstr.startswith('-preview'):
+                labelstr.replace('-preview','')
                 preview = True
 
         #backfill up to 6 commas
@@ -63,8 +64,6 @@ async def on_message(message):
         if type(report) is bool:
             await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
         elif type(report) is bytes:
-            #with open('/tmp/preview.png','w') as f:
-            #    f.write(report)
             await message.channel.send(file=discord.File(io.BytesIO(report), 'preview.png'))
 
 def osBooltoPyBool(str):
