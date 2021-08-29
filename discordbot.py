@@ -63,7 +63,7 @@ async def on_message(message):
         if type(report) is bool:
             await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
         elif type(report) is bytes:
-            await message.channel.send(file=Image.open(io.BytesIO(report)))
+            await message.channel.send(file=discord.File(io.BytesIO(report), 'preview.png'))
 
 def osBooltoPyBool(str):
     if 'true' in str.lower(): return True
