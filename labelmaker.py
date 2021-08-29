@@ -77,7 +77,7 @@ class labelprinter:
 
         if preview:
             renderpng = zpl.render_png((self._width/self._dpi/25.4),(self._height/self._dpi/25.4),self._dpi)
-            logging.warn(type(renderpng), renderpng)
+            #logging.debug(type(renderpng), renderpng)
             return renderpng
         else:
             prn.print_zpl(zpl)
