@@ -62,7 +62,7 @@ async def on_message(message):
         report = lp.printlabel(labelstr[0],labelstr[1].strip(),labelstr[2].strip(),labelstr[3].strip(),labelstr[4].strip(), quantity=qty, preview=preview)
         if type(report) is bool:
             await message.channel.send(f'Printing label x {qty}:\n\t{labelstr}')
-        elif type(report) is bytearray:
+        elif type(report) is bytes:
             await message.channel.send(file=Image.open(io.BytesIO(report)))
 
 def osBooltoPyBool(str):
