@@ -9,22 +9,19 @@ from simple_zpl2 import QR_Barcode
 
 class labelprinter:
 
-    DPI203 = 203 #dots per mm
-    DPI300 = 300 #dots per mm
+    DPI203 = 8 #dots per mm
+    DPI300 = 12 #dots per mm
 
     def __init__(self, ip, width=2.625, height=1, imperialunits=True, dpi=DPI203, font='C', bigtextsize=30):
         self._ip = ip
-        if imperialunits:
-            self._dpi = dpi
-        else:
-            self._dpi = round(dpi/25.4)
+        self._dpi = dpi
         self._barcodeheight = int(self._dpi * 2)
         self._bigtextsize = int(max(bigtextsize,self._dpi*2))
         self._smalltextsize = int(max(bigtextsize/2,self._dpi))
         self._font = font
         if imperialunits:
-            self._width = int(width * self._dpi)
-            self._height = int(height * self._dpi)
+            self._width = int(width * 25.4 * self._dpi)
+            self._height = int(height * 25.4 * self._dpi)
         else:
             self._width = int(width * self._dpi)
             self._height = int(height * self._dpi)
@@ -79,7 +76,7 @@ class labelprinter:
                 zpl.add_barcode(bc)
 
         if preview:
-            return zpl.render_png(self._width/self._dpi,self._height/self._dpi,self._dpi)
+            return zpl.render_png((self._width/self._dpi/25.4),(self._height/self._dpi/25.4),self._dpi)
         else:
             prn.print_zpl(zpl)
 
