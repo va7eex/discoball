@@ -53,7 +53,7 @@ async def on_message(message):
                     qty = min(max(int(qtystr.strip()),1),maxqty)
                     labelstr = labelstr.replace(f'qty {qtystr} ','')
             if inspectstr.startswith('-preview'):
-                labelstr.replace('-preview','')
+                labelstr = labelstr.replace('-preview','')
                 preview = True
 
         #backfill up to 6 commas
